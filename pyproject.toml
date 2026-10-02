@@ -4,11 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "yaracompilereview"
-version = "1.0.1"
+version = "1.0.2"
+authors = [{ name = "dhtfish98" }]
 description = "Bounded offline evidence review: YaraCompileReview"
 requires-python = ">=3.10"
 license = "GPL-3.0-only"
-license-files = ["LICENSE"]
+license-files = ["LICENSE", "NEW_IMPLEMENTATION_NOTICE.txt"]
 dependencies = ["yara-python @ git+https://github.com/VirusTotal/yara-python.git@c1cdca5a1b1413f68d7af008bf43ab310d6f19a7"]
 
 [project.scripts]

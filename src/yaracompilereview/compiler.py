@@ -1,3 +1,4 @@
+# New implementation author: dhtfish98.
 """Private compiler subprocess. Never calls Rules.match or reads include files."""
 
 import json
