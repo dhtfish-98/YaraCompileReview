@@ -1,0 +1,80 @@
+{
+  "source_repo": "CIRCL/yara-validator",
+  "source_commit": "2cbcea8a9470023a49fc6c620493e23a041f563a",
+  "scope": "Complete local rule-source validation wrapper: direct source or bounded explicit namespace/include mapping, compiler subprocess with wall/CPU limits, compiler errors/warnings and private-safe verdict/count output.",
+  "license": "GPL-3.0-only",
+  "source_files": [
+    {
+      "path": "LICENSE",
+      "bytes": 35141,
+      "lines": 674,
+      "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/LICENSE"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2844,
+      "lines": 57,
+      "sha256": "f6cb46055c91f147e4a28649576e901dd720fdb84699c29e7e5abf15c3b18203",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/README.md"
+    },
+    {
+      "path": "setup.cfg",
+      "bytes": 40,
+      "lines": 2,
+      "sha256": "d4ef8a1566ce43a6411113cbcfeb425255e23942b4e126f598aaa8f812dd035c",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/setup.cfg"
+    },
+    {
+      "path": "setup.py",
+      "bytes": 597,
+      "lines": 19,
+      "sha256": "0bf31d443a5f13ee7251af3962560f9bab94c8107bbf6df8deba6476b8335bbf",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/setup.py"
+    },
+    {
+      "path": "yara_validator/__init__.py",
+      "bytes": 30,
+      "lines": 1,
+      "sha256": "a5f70b7574bffb5b40507d66fc3af8857d70042390072d0ee45cd21974c01822",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/yara_validator/__init__.py"
+    },
+    {
+      "path": "yara_validator/yara_validator.py",
+      "bytes": 17609,
+      "lines": 421,
+      "sha256": "b8f12e4a4264a416c5dee2e3276b48ed646895b6132b8c86f4ebf021a6da0a8f",
+      "url": "https://raw.githubusercontent.com/CIRCL/yara-validator/2cbcea8a9470023a49fc6c620493e23a041f563a/yara_validator/yara_validator.py"
+    }
+  ],
+  "new_runtime_files": [
+    "src/yaracompilereview/__init__.py",
+    "src/yaracompilereview/__main__.py",
+    "src/yaracompilereview/compiler.py",
+    "src/yaracompilereview/core.py"
+  ],
+  "implementation_files": [
+    {
+      "path": "src/yaracompilereview/__init__.py",
+      "sha256": "38582950d26e35b221eb5e109dc3283861d1300bcd8b1a0bef233bc8ff76a761",
+      "bytes": 49
+    },
+    {
+      "path": "src/yaracompilereview/__main__.py",
+      "sha256": "889f673c2145e28095264339dbb3be024859a0bd7242435c479850567be2fd49",
+      "bytes": 49
+    },
+    {
+      "path": "src/yaracompilereview/compiler.py",
+      "sha256": "ccd9db9385fd978c40d599b6d67fe942e010bde7e4d51207ba930aa908239d43",
+      "bytes": 2479
+    },
+    {
+      "path": "src/yaracompilereview/core.py",
+      "sha256": "e5c3300e35430d3d8edeefbb9a97bb4ebe282c329de8ac67b6ec87f7b5061203",
+      "bytes": 6455
+    }
+  ],
+  "source_review": "Upstream CIRCL wrapper supports disk buffering, deletion of temporary data and optional rule repairs. New code supports bounded compile validation with explicit in-memory includes only and never calls Rules.match.",
+  "review_boundary": "Complete new runtime review; selected upstream format/entry-point review. Unselected upstream platform code is not claimed audited or rewritten."
+}
