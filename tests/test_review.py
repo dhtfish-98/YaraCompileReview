@@ -111,6 +111,16 @@ class Tests(unittest.TestCase):
             self.assertEqual(r["status"], "OPEN")
             self.assertFalse(r["complete"])
 
+    def test_compiler_start_failure_is_open(self):
+        from unittest.mock import patch
+
+        with patch("yaracompilereview.core.subprocess.run", side_effect=OSError("private interpreter path")):
+            result = inspect(b"rule A { condition:true }")
+        self.assertEqual(result["status"], "OPEN")
+        self.assertFalse(result["complete"])
+        self.assertEqual(result["findings"], ["compiler_process_start_failed"])
+        self.assertNotIn("private interpreter path", str(result))
+
     def test_escaped_transport_over_4mib_compiles(self):
         source_a = "//" + "\\" * 1100000 + "\nrule A { condition: true }"
         source_b = "//" + "\\" * 1100000 + "\nrule B { condition: true }"
@@ -124,3 +134,31 @@ class Tests(unittest.TestCase):
         r = inspect(raw)
         self.assertEqual(r["status"], "PASS")
         self.assertEqual(r["compiled_rule_count"], 2)
+
+
+class NativeCompilerGateTests(unittest.TestCase):
+    def test_old_unknown_native_never_compiles(self):
+        import contextlib
+        import io
+        import sys
+        import types
+        from unittest.mock import Mock, patch
+        import yaracompilereview.compiler as compiler
+
+        for version in (None, "4.5.4", "4.5.5", "4.5.7", "unknown", "4.5.8-beta", "9" * 5000):
+            fake = types.SimpleNamespace(YARA_VERSION=version, compile=Mock())
+            output = io.StringIO()
+            with patch.dict(sys.modules, {"yara": fake}), patch("resource.setrlimit"), contextlib.redirect_stdout(output):
+                self.assertEqual(compiler.main(), 0)
+            fake.compile.assert_not_called()
+            result = json.loads(output.getvalue())
+            self.assertEqual(result["status"], "OPEN")
+            self.assertFalse(result["complete"])
+
+    def test_actual_fixed_constant_folding(self):
+        expressions = [r"~9223372036854775807 * 9223372036854775807", r"~9223372036854775807 \ -1", r"-(~9223372036854775807)"]
+        for expression, expected in zip(expressions, ("FAIL", "FAIL", "PASS")):
+            source = ("rule boundary { condition: (" + expression + ") != 0 }").encode()
+            result = inspect(source)
+            self.assertEqual(result["status"], expected, result)
+            self.assertEqual(result["compiler_version"], "4.5.8")

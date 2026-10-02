@@ -66,15 +66,16 @@
     },
     {
       "path": "src/yaracompilereview/compiler.py",
-      "sha256": "ccd9db9385fd978c40d599b6d67fe942e010bde7e4d51207ba930aa908239d43",
-      "bytes": 2479
+      "sha256": "02197abd7909e92bce2876b68a4ee1557b7b416e333a4df38f4c2f08e04d8b47",
+      "bytes": 3147
     },
     {
       "path": "src/yaracompilereview/core.py",
-      "sha256": "e5c3300e35430d3d8edeefbb9a97bb4ebe282c329de8ac67b6ec87f7b5061203",
-      "bytes": 6455
+      "sha256": "c87eb1a5225c2468f3ecd0f4d263a4b1b11c21970b904854b718295590cb8006",
+      "bytes": 6866
     }
   ],
   "source_review": "Upstream CIRCL wrapper supports disk buffering, deletion of temporary data and optional rule repairs. New code supports bounded compile validation with explicit in-memory includes only and never calls Rules.match.",
-  "review_boundary": "Complete new runtime review; selected upstream format/entry-point review. Unselected upstream platform code is not claimed audited or rewritten."
+  "review_boundary": "Complete new runtime review; selected upstream format/entry-point review. Unselected upstream platform code is not claimed audited or rewritten.",
+  "current_reaudit": "REAUDIT_20261002.json"
 }

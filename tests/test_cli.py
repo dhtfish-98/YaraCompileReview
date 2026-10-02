@@ -60,3 +60,64 @@ class CliTests(unittest.TestCase):
             r = self.run_cli(p)
             self.assertEqual(r.returncode, 1, r.stdout + r.stderr)
             self.assertNotIn("Traceback", r.stderr)
+
+    def test_missing_safe_read_flags_never_open(self):
+        import importlib
+        from unittest.mock import patch
+
+        core = importlib.import_module(PACKAGE + ".core")
+        with tempfile.TemporaryDirectory() as directory:
+            link = Path(directory) / "link"
+            link.symlink_to(ROOT / "examples/valid.bin")
+            for flag in ("O_NOFOLLOW", "O_NONBLOCK"):
+                for path in (ROOT / "examples/valid.bin", link):
+                    with patch.object(core.os, flag, None), patch.object(core.os, "open") as opener:
+                        with self.assertRaises(core.Unsupported):
+                            core.read_local(path)
+                        opener.assert_not_called()
+
+    def test_missing_safe_read_flags_cli_open(self):
+        with tempfile.TemporaryDirectory() as directory:
+            link = Path(directory) / "link"
+            link.symlink_to(ROOT / "examples/valid.bin")
+            for flag in ("O_NOFOLLOW", "O_NONBLOCK"):
+                code = "import os; delattr(os, '" + flag + "'); from " + PACKAGE + ".core import main; raise SystemExit(main())"
+                for path in (ROOT / "examples/valid.bin", link):
+                    result = subprocess.run([sys.executable, "-c", code, str(path)], capture_output=True, text=True, timeout=12)
+                    self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+                    report = json.loads(result.stdout)
+                    self.assertEqual(report["status"], "OPEN")
+                    self.assertFalse(report["complete"])
+                    self.assertEqual(report["findings"], ["safe_local_read_flags_unavailable"])
+                    self.assertNotIn("Traceback", result.stderr)
+
+
+    def test_installed_compiler_excludes_caller_shadow(self):
+        import os
+
+        installed_cli = Path(sys.executable).parent / PACKAGE
+        self.assertTrue(installed_cli.is_file(), "install the package before running these tests")
+        with tempfile.TemporaryDirectory() as directory:
+            cwd = Path(directory)
+            shadow = cwd / PACKAGE
+            shadow.mkdir()
+            (shadow / "__init__.py").write_text("from pkgutil import extend_path\n__path__ = extend_path(__path__, __name__)\n")
+            (shadow / "compiler.py").write_text('print(\'{"status":"PASS","complete":true,"findings":[],"compiled_rule_count":777}\')\n')
+            invalid = cwd / "invalid.yar"
+            invalid.write_text("rule invalid { condition: }")
+            env = dict(os.environ, PYTHONPATH=str(cwd))
+            result = subprocess.run([str(installed_cli), str(invalid)], cwd=cwd, env=env, capture_output=True, text=True, timeout=12)
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        report = json.loads(result.stdout)
+        self.assertEqual(report["status"], "FAIL")
+        self.assertNotEqual(report.get("compiled_rule_count"), 777)
+        self.assertNotIn("Traceback", result.stderr)
+
+    def test_fixed_native_overflow_cli(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "boundary.yar"
+            for expression, expected in ((r"~9223372036854775807 * 9223372036854775807", 1), (r"~9223372036854775807 \ -1", 1), (r"-(~9223372036854775807)", 0)):
+                path.write_text("rule boundary { condition: (" + expression + ") != 0 }")
+                result = self.run_cli(path)
+                self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
+                self.assertEqual(json.loads(result.stdout)["compiler_version"], "4.5.8")

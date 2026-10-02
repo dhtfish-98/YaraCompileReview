@@ -1,7 +1,14 @@
 """Private compiler subprocess. Never calls Rules.match or reads include files."""
 
 import json
+import re
 import sys
+
+
+def native_version_supported(version):
+    if not isinstance(version, str) or not re.fullmatch(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", version):
+        return False
+    return tuple(map(int, version.split("."))) >= (4, 5, 8)
 
 
 def main():
@@ -37,6 +44,14 @@ def main():
             )
         )
         return 0
+    native_version = getattr(yara, "YARA_VERSION", None)
+    if not native_version_supported(native_version):
+        print(json.dumps({
+            "status": "OPEN", "complete": False,
+            "findings": ["native_yara_version_unsupported_or_before_4_5_8"],
+            "compiler_version": native_version if isinstance(native_version, str) else None,
+        }))
+        return 0
     try:
         maximum = 6 * 4 * 1024 * 1024 + 65536
         transport = sys.stdin.buffer.read(maximum + 1)
@@ -71,7 +86,7 @@ def main():
             "complete": True,
             "findings": [],
             "compiled_rule_count": count,
-            "compiler_version": yara.__version__,
+            "compiler_version": native_version,
         }
     except (yara.Error, ValueError, KeyError, RecursionError):
         result = {
@@ -79,6 +94,7 @@ def main():
             "complete": False,
             "findings": ["rule_compile_error_or_warning_or_unauthorized_include"],
         }
+    result["compiler_version"] = native_version
     print(json.dumps(result))
     return 0
 

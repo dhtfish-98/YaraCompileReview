@@ -61,9 +61,11 @@ def inspect(data):
 
 
 def read_local(path):
-    fd = os.open(
-        path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0) | getattr(os, "O_NONBLOCK", 0)
-    )
+    nofollow = getattr(os, "O_NOFOLLOW", None)
+    nonblock = getattr(os, "O_NONBLOCK", None)
+    if not isinstance(nofollow, int) or not nofollow or not isinstance(nonblock, int) or not nonblock:
+        raise Unsupported("safe_local_read_flags_unavailable")
+    fd = os.open(path, os.O_RDONLY | nofollow | nonblock)
     try:
         info = os.fstat(fd)
         require(stat.S_ISREG(info.st_mode), "regular_file_required")
@@ -90,6 +92,8 @@ def main():
     args = parser.parse_args()
     try:
         report = inspect(read_local(args.input))
+    except Unsupported as exc:
+        report = {"status": "OPEN", "complete": False, "findings": [str(exc)]}
     except (OSError, Invalid):
         report = {
             "status": "FAIL",
@@ -182,13 +186,15 @@ def analyze(data):
     require(len(payload) <= MAX_TRANSPORT, "serialized_source_limit")
     try:
         done = subprocess.run(
-            [sys.executable, "-m", "yaracompilereview.compiler"],
+            [sys.executable, "-I", "-m", "yaracompilereview.compiler"],
             input=payload,
             capture_output=True,
             timeout=5,
         )
     except subprocess.TimeoutExpired:
         raise Unsupported("compiler_wall_timeout") from None
+    except OSError:
+        raise Unsupported("compiler_process_start_failed") from None
     require(len(done.stdout) <= 65536, "compiler_response_limit")
     if done.returncode != 0:
         raise Unsupported("compiler_process_failed_or_resource_limit")
