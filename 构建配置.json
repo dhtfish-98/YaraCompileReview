@@ -1,0 +1,35 @@
+{
+  "schema": "project-build-layout.v1",
+  "project": "YaraCompileReview",
+  "author": "dhtfish98",
+  "kind": "python",
+  "base_public_commit": "9351ad2c4c5d88f3db8997c43b560f3e937e4850",
+  "restored_inputs": [
+    {
+      "original": "LICENSE",
+      "stored": "项目文档/LICENSE",
+      "sha256": "589ed823e9a84c56feb95ac58e7cf384626b9cbf4fda2a907bc36e103de1bad2"
+    },
+    {
+      "original": "ORIGIN.md",
+      "stored": "项目文档/ORIGIN.md",
+      "sha256": "f1d448f4b6eb56069a803d3b57d08540516e6333c42faaec323e2b1f34aff2b0"
+    },
+    {
+      "original": "README.md",
+      "stored": "项目文档/README.md",
+      "sha256": "1783b8cc73e4cef79049f672c94f0578be07a9ce1dd6f99862db667fec8e1e20"
+    },
+    {
+      "original": "VALIDATION.md",
+      "stored": "项目文档/VALIDATION.md",
+      "sha256": "1401c79a42091cdfe6d1580fef81b329c41ca74aa922f974342ee13f0156343d"
+    },
+    {
+      "original": "examples/README.md",
+      "stored": "项目文档/examples/README.md",
+      "sha256": "dfd29fdab2ad983f9c5222b60d119a4b174783e5e03cae143d76f4972c811b31"
+    }
+  ],
+  "platform_entries": []
+}
