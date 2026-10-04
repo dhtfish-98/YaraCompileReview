@@ -9,7 +9,7 @@ authors = [{ name = "dhtfish98" }]
 description = "Bounded offline evidence review: YaraCompileReview"
 requires-python = ">=3.10"
 license = "GPL-3.0-only"
-license-files = ["项目文档/LICENSE", "NEW_IMPLEMENTATION_NOTICE.txt"]
+license-files = ["项目文档/LICENSE", "项目文档/NEW_IMPLEMENTATION_NOTICE.txt"]
 dependencies = ["yara-python @ git+https://github.com/VirusTotal/yara-python.git@c1cdca5a1b1413f68d7af008bf43ab310d6f19a7"]
 
 [project.scripts]
