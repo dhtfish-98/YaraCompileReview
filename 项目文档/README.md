@@ -2,7 +2,7 @@
 
 # YaraCompileReview
 
-New implementation author: **dhtfish98**. Current package version: **1.0.2**.
+New implementation author: **dhtfish98**. Current package version: **1.0.3**.
 
 Validates defensive detection rule deployment inputs without scanning or executing target content. yara-python remains an attributed external compiler dependency, not a rewritten compiler.
 
